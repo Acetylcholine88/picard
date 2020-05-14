@@ -1,0 +1,53 @@
+
+
+#sorting needed for picard
+
+nano picard_sorting
+
+#!/bin/bash
+#
+#PBS -N picard_S22
+#PBS -l nodes=1:ppn=2,walltime=168:00:00,mem=12gb
+
+module load jdk1.8.0_65
+
+java -Xmx2g -jar /scratch/carinad88/NGS/bwa-0.7.17/output/picard.jar SortSam INPUT=/scratch/carinad88/NGS/bwa-0.7.17/output/CAACGGAT-TAAGTGGC_S22.bam OUTPUT=/scratch/carinad88/NGS/bwa-0.7.17/output/CAACGGAT-TAAGTGGC_S22_sorted_hg19.bam SORT_ORDER=coordinate
+
+qsub picard_sorting
+
+
+#picard markduplicates (picard.jar must be located in directory of .bam files in order to work; could not find picard on module avail)
+
+nano picard_S22
+
+#!/bin/bash
+#
+#PBS -N picard_S22_
+#PBS -l nodes=1:ppn=2,walltime=168:00:00,mem=12gb
+
+module load jdk1.8.0_65
+
+java -jar /scratch/carinad88/NGS/bwa-0.7.17/output/picard.jar MarkDuplicates \
+I=/scratch/carinad88/NGS/bwa-0.7.17/output/CAACGGAT-TAAGTGGC_S22_sorted_hg19.bam \
+O=/scratch/carinad88/NGS/bwa-0.7.17/output/CAACGGAT-TAAGTGGC_S22_marked_duplicates.bam \
+M=/scratch/carinad88/NGS/bwa-0.7.17/output/CAACGGAT-TAAGTGGC_S22_marked_duplicates.txt
+
+
+qsub picard_S22
+
+
+Stuck here?
+
+I checked the metrics file and get this:
+
+## htsjdk.samtools.metrics.StringHeader
+# MarkDuplicates INPUT=[/scratch/carinad88/NGS/bwa-0.7.17/output/CAACGGAT-TAAGTGGC_S22_sorted_hg19.bam] OUTPUT=/scratch/carinad88/NGS/bwa-0.7.17/output/CAACGGAT-TAAGTGGC_S22_marked_duplica
+tes.bam METRICS_FILE=/scratch/carinad88/NGS/bwa-0.7.17/output/CAACGGAT-TAAGTGGC_S22_marked_duplicates.txt    MAX_SEQUENCES_FOR_DISK_READ_ENDS_MAP=50000 MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=8
+000 SORTING_COLLECTION_SIZE_RATIO=0.25 TAG_DUPLICATE_SET_MEMBERS=false REMOVE_SEQUENCING_DUPLICATES=false TAGGING_POLICY=DontTag CLEAR_DT=true DUPLEX_UMI=false ADD_PG_TAG_TO_READS=true REM
+OVE_DUPLICATES=false ASSUME_SORTED=false DUPLICATE_SCORING_STRATEGY=SUM_OF_BASE_QUALITIES PROGRAM_RECORD_ID=MarkDuplicates PROGRAM_GROUP_NAME=MarkDuplicates READ_NAME_REGEX=<optimized capt
+ure of last three ':' separated fields as numeric values> OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 MAX_OPTICAL_DUPLICATE_SET_SIZE=300000 VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT
+ COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json USE_JDK_DEFLATER=false USE_JDK_INFLATER=false
+## htsjdk.samtools.metrics.StringHeader
+# Started on: Wed May 13 13:25:26 CDT 2020
+
+
